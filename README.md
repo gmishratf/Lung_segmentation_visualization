@@ -13,11 +13,13 @@ Dependencies:
 - scikit-image  
 - matplotlib  
 - plotly  
-  
+
 TODO:  
 1. Set vtkimageplanes for lung slicing
-2. Fix static plotting
+2. Fix static plotting class (Matplotlib and plotly unable to handle million+ data points)
 
 FIXED:
 1. Fixed viewport 1  
 2. Fixed datasets, uploaded better sample datasets.  
+3. Fixed camera for touch screen inputs.  
+4. Fixed dataset labels.  
