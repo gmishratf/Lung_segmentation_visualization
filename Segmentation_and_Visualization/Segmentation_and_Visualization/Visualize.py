@@ -235,7 +235,8 @@ def vis(dicom_path, np_lung, np_fill):
     renWin.AddRenderer(viz7.GetRenderer())
 
     iren = vtk.vtkRenderWindowInteractor()
-    style = vtk.vtkInteractorStyleTrackballActor()
+    #style = vtk.vtkInteractorStyleTrackballActor()
+    style = vtk.vtkInteractorStyleMultiTouchCamera()
     iren.SetInteractorStyle(style)
     iren.SetRenderWindow(renWin)
     renWin.SetFullScreen(1)
