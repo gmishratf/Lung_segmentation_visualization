@@ -7,7 +7,8 @@ class Visualize():
         self.__ren = vtk.vtkRenderer()
         self.__colorFunc = vtk.vtkColorTransferFunction()
         self.__alphaChannelFunc = vtk.vtkPiecewiseFunction()
-
+    
+        
     def viz_SetViewport(self, xmin, xmax, ymin, ymax):
         self.__ren.SetViewport(xmin, xmax, ymin, ymax)
 
@@ -18,7 +19,7 @@ class Visualize():
         text.GetTextProperty().SetFontSize(fontsize)
         text.GetTextProperty().SetColor(color[0], color[1], color[2])
         self.__ren.AddActor2D(text)
-
+    
     def viz_AddColorFunctionPoint(self, p, r, g, b):
         self.__colorFunc.AddRGBPoint(p, r, g, b)
 
@@ -47,6 +48,36 @@ class Visualize():
     def viz_SetBackground(self, r, g, b):
         self.__ren.SetBackground(r, g, b)
 
+    def viz_VisualizeDICOM(self, path):
+        volume = vtk.vtkVolume()
+        dc_img_reader = vtk.vtkDICOMImageReader()
+        dc_img_reader.SetDirectoryName(path)
+        dc_img_reader.Update()
+        dc_color_func = vtk.vtkColorTransferFunction()
+        dc_color_func.AddRGBPoint(-3024, 0.0, 0.0, 0.0)
+        dc_color_func.AddRGBPoint(-77, 0.55, 0.25, 0.15)
+        dc_color_func.AddRGBPoint(94, 0.88, 0.60, 0.29)
+        dc_color_func.AddRGBPoint(179, 1.0, 0.94, 0.95)
+        dc_color_func.AddRGBPoint(260, 0.62, 0.0, 0.0)
+        dc_color_func.AddRGBPoint(3071, 0.82, 0.66, 1.0)
+        dc_alpha_func = vtk.vtkPiecewiseFunction()
+        dc_alpha_func.AddPoint(-3024, 0.0)
+        dc_alpha_func.AddPoint(-77, 0.0)
+        dc_alpha_func.AddPoint(94, 0.29)
+        dc_alpha_func.AddPoint(179, 0.55)
+        dc_alpha_func.AddPoint(260, 0.84)
+        dc_alpha_func.AddPoint(3071, 0.875)
+        volumeProperty = vtk.vtkVolumeProperty()
+        volumeProperty.SetColor(dc_color_func)
+        volumeProperty.SetScalarOpacity(dc_alpha_func)
+        volumeProperty.ShadeOn()
+        volumeProperty.SetInterpolationTypeToLinear()
+        volumeMapper = vtk.vtkGPUVolumeRayCastMapper()
+        volumeMapper.SetInputConnection(dc_img_reader.GetOutputPort())
+        volume.SetMapper(volumeMapper)
+        volume.SetProperty(volumeProperty) 
+        self.__ren.AddVolume(volume)
+
     def viz_visualize(self):
         volume = vtk.vtkVolume()
         volumeProperty = vtk.vtkVolumeProperty()
@@ -63,7 +94,7 @@ class Visualize():
     def GetRenderer(self):
         return self.__ren
 
-def vis(scan, np_lung, np_fill):
+def vis(dicom_path, np_lung, np_fill):
     # Renderers
     viz1, viz2, viz3, viz4, viz5, viz6, viz7 = [Visualize() for i in range(7)]
 
@@ -128,7 +159,8 @@ def vis(scan, np_lung, np_fill):
     viz7.viz_SetViewportName("L Trachea to lung volume ratio: {:.5f}".format(l_ratio), 10, 50)
 
     # Setting Data
-    viz1.viz_SetData(scan)
+    #viz1.viz_SetData(scan)
+    viz1.viz_VisualizeDICOM(dicom_path)
     viz2.viz_SetData(np_lung)
     viz3.viz_SetData(np_trachea)
     viz4.viz_SetData(m_r)
@@ -137,7 +169,7 @@ def vis(scan, np_lung, np_fill):
     viz7.viz_SetData(m_pul_l)
     
     # Adding color
-    viz1.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
+    #viz1.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
     viz2.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
     viz3.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
     viz4.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
@@ -146,9 +178,9 @@ def vis(scan, np_lung, np_fill):
     viz7.viz_AddColorFunctionPoint(0, 85/255.0, 0.0, 0.0)
 
     # Adding Opacity
-    viz1.viz_AddOpacityFunctionPoint(0, 0.0)
-    viz1.viz_AddOpacityFunctionPoint(255, 1.0)
-    viz1.viz_AddOpacityFunctionPoint(3, 10.0)
+    #viz1.viz_AddOpacityFunctionPoint(0, 0.0)
+    #viz1.viz_AddOpacityFunctionPoint(255, 1.0)
+    #viz1.viz_AddOpacityFunctionPoint(3, 10.0)
 
     viz2.viz_AddOpacityFunctionPoint(0, 0.0)
     viz2.viz_AddOpacityFunctionPoint(255, 1.0)
@@ -184,7 +216,7 @@ def vis(scan, np_lung, np_fill):
     viz7.viz_SetLighting(1.0, 1.0, 1.0)
 
     # Final steps for visualizing
-    viz1.viz_visualize()
+    #viz1.viz_visualize()
     viz2.viz_visualize()
     viz3.viz_visualize()
     viz4.viz_visualize()
@@ -203,6 +235,8 @@ def vis(scan, np_lung, np_fill):
     renWin.AddRenderer(viz7.GetRenderer())
 
     iren = vtk.vtkRenderWindowInteractor()
+    style = vtk.vtkInteractorStyleTrackballActor()
+    iren.SetInteractorStyle(style)
     iren.SetRenderWindow(renWin)
     renWin.SetFullScreen(1)
     renWin.Render()

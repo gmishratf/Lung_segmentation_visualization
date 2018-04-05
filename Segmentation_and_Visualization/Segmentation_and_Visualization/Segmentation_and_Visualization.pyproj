@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Segmentation_and_Visualization</Name>
     <RootNamespace>Segmentation_and_Visualization</RootNamespace>
-    <InterpreterId>Global|VisualStudio|Purepython3</InterpreterId>
+    <InterpreterId>Global|VisualStudio|Miniconda3</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +43,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|VisualStudio|Purepython3" />
+    <InterpreterReference Include="Global|VisualStudio|Miniconda3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
