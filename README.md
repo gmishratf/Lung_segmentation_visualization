@@ -17,4 +17,7 @@ Dependencies:
 TODO:  
 1. Set vtkimageplanes for lung slicing
 2. Fix static plotting
-3. Fix original scan visualization (viewport 1)
+
+FIXED:
+1. Fixed viewport 1  
+2. Fixed datasets, uploaded better sample datasets.  
